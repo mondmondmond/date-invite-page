@@ -276,7 +276,7 @@
       const teaseLines = ["약오르지? 😜"];
       const musicVideoId = "ZRyxH-db4iY";
       let player;
-      let musicOn = true;
+      let musicOn = false;
 
       if (!yesBtn || !noBtn || !btnArea) {
         return;
@@ -290,14 +290,31 @@
       function tryPlayMusic() {
         if (!player || typeof player.playVideo !== "function") return;
         try {
+          if (typeof player.unMute === "function") {
+            player.unMute();
+          }
           player.playVideo();
           if (typeof player.setVolume === "function") {
-            player.setVolume(40);
+            player.setVolume(45);
           }
           musicOn = true;
           setMusicLabel();
         } catch (_err) {
           // ignore autoplay restriction errors
+        }
+      }
+
+      function autoplayFallbackMuted() {
+        if (!player || typeof player.playVideo !== "function") return;
+        try {
+          if (typeof player.mute === "function") {
+            player.mute();
+          }
+          player.playVideo();
+          musicOn = false;
+          setMusicLabel();
+        } catch (_err) {
+          // ignore
         }
       }
 
@@ -330,6 +347,12 @@
           events: {
             onReady: function () {
               tryPlayMusic();
+              setTimeout(() => {
+                const state = typeof player.getPlayerState === "function" ? player.getPlayerState() : -1;
+                if (state !== 1) {
+                  autoplayFallbackMuted();
+                }
+              }, 350);
             }
           }
         });
