@@ -36,7 +36,7 @@
       background-image: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.35)),
         var(--bg-image);
       background-size: cover;
-      background-position: center;
+      background-position: center 45%;
       background-repeat: no-repeat;
       background-color: #111;
       transition: background-image 0.5s ease;
@@ -46,7 +46,7 @@
     @media (max-width: 768px) {
       body {
         background-size: contain;
-        background-position: center center;
+        background-position: center 45%;
       }
     }
 
@@ -162,14 +162,14 @@
       position: fixed;
       z-index: 25;
       pointer-events: none;
-      padding: 6px 10px;
+      padding: 8px 12px;
       border-radius: 999px;
       background: rgba(17, 17, 17, 0.78);
       color: #fff;
-      font-size: 12px;
+      font-size: 14px;
       font-weight: 700;
       white-space: nowrap;
-      animation: teasePop 0.9s ease forwards;
+      animation: teasePop 1.4s ease forwards;
     }
 
     .music-toggle {
@@ -273,7 +273,7 @@
       const musicToggle = document.getElementById("musicToggle");
       const emojis = ["❤️", "💖", "💘", "💞", "💕", "✨", "🎉", "🥳", "😽", "💫"];
       const sparkColors = ["#ff4d6d", "#ffd166", "#7bdff2", "#f9a8d4", "#ffffff"];
-      const teaseLines = ["약오르지?", "못 잡지~", "한 발 늦었지!", "아깝다~", "메롱 😜"];
+      const teaseLines = ["약오르지? 😜"];
       const musicVideoId = "ZRyxH-db4iY";
       let player;
       let musicOn = true;
@@ -422,13 +422,13 @@
         bubble.className = "tease-pop";
         bubble.textContent = teaseLines[Math.floor(Math.random() * teaseLines.length)];
 
-        const left = Math.min(window.innerWidth - 90, Math.max(10, rect.left - 8));
-        const top = Math.max(10, rect.top - 26);
+        const left = Math.min(window.innerWidth - 140, Math.max(10, rect.left - 12));
+        const top = Math.max(10, rect.top - 36);
         bubble.style.left = `${left}px`;
         bubble.style.top = `${top}px`;
 
         document.body.appendChild(bubble);
-        setTimeout(() => bubble.remove(), 950);
+        setTimeout(() => bubble.remove(), 1450);
       }
 
       noBtn.addEventListener("mouseenter", moveNo);
