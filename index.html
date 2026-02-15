@@ -113,6 +113,22 @@
       display: none;
     }
 
+    .goto-link {
+      display: none;
+      margin-top: 12px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: #111;
+      color: #fff;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .goto-link.show {
+      display: inline-block;
+    }
+
     .heart {
       position: fixed;
       pointer-events: none;
@@ -202,7 +218,14 @@
       <button class="btn no" id="noBtn" type="button">No</button>
     </div>
 
-    <div class="result" id="result">❤️ 우리 수요일 키카 확정 ❤️</div>
+    <div class="result" id="result">🎠 수요일 키카 원정대 결성 완료! 🎉</div>
+    <a
+      id="kikaLink"
+      class="goto-link"
+      href="https://naver.me/5BwUnCSa"
+      target="_blank"
+      rel="noopener noreferrer"
+    >키카 바로가기</a>
   </div>
 
   <div id="ytPlayer" class="yt-audio" aria-hidden="true"></div>
@@ -214,6 +237,7 @@
       const noBtn = document.getElementById("noBtn");
       const btnArea = document.getElementById("btnArea");
       const result = document.getElementById("result");
+      const kikaLink = document.getElementById("kikaLink");
       const musicToggle = document.getElementById("musicToggle");
       const emojis = ["❤️", "💖", "💘", "💞", "💕", "✨", "🎉", "🥳", "😽", "💫"];
       const sparkColors = ["#ff4d6d", "#ffd166", "#7bdff2", "#f9a8d4", "#ffffff"];
@@ -302,6 +326,9 @@
         document.body.style.backgroundImage =
           'linear-gradient(rgba(0, 0, 0, 0.22), rgba(0, 0, 0, 0.22)), var(--bg-image)';
         result.style.display = "block";
+        if (kikaLink) {
+          kikaLink.classList.add("show");
+        }
         createCelebration();
       });
 
