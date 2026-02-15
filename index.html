@@ -105,6 +105,10 @@
       color: #111;
     }
 
+    .no.teasing {
+      animation: noWiggle 0.32s ease;
+    }
+
     .result {
       margin-top: 18px;
       font-size: 20px;
@@ -152,6 +156,20 @@
       pointer-events: none;
       z-index: 6;
       animation: spark 1.6s ease-out forwards;
+    }
+
+    .tease-pop {
+      position: fixed;
+      z-index: 25;
+      pointer-events: none;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(17, 17, 17, 0.78);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+      animation: teasePop 0.9s ease forwards;
     }
 
     .music-toggle {
@@ -203,6 +221,20 @@
       0% { transform: scale(0.6); opacity: 0.9; }
       100% { transform: translateY(-50px) scale(0.1); opacity: 0; }
     }
+
+    @keyframes teasePop {
+      0% { transform: translateY(6px) scale(0.9); opacity: 0; }
+      15% { opacity: 1; }
+      100% { transform: translateY(-18px) scale(1); opacity: 0; }
+    }
+
+    @keyframes noWiggle {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      50% { transform: translateX(4px); }
+      75% { transform: translateX(-3px); }
+      100% { transform: translateX(0); }
+    }
   </style>
 </head>
 <body>
@@ -218,7 +250,7 @@
       <button class="btn no" id="noBtn" type="button">No</button>
     </div>
 
-    <div class="result" id="result">🎠 수요일 키카 원정대 결성 완료! 🎉</div>
+    <div class="result" id="result">🧃양말 챙겨! 수요일 키카 데이트 확정!</div>
     <a
       id="kikaLink"
       class="goto-link"
@@ -241,6 +273,7 @@
       const musicToggle = document.getElementById("musicToggle");
       const emojis = ["❤️", "💖", "💘", "💞", "💕", "✨", "🎉", "🥳", "😽", "💫"];
       const sparkColors = ["#ff4d6d", "#ffd166", "#7bdff2", "#f9a8d4", "#ffffff"];
+      const teaseLines = ["약오르지?", "못 잡지~", "한 발 늦었지!", "아깝다~", "메롱 😜"];
       const musicVideoId = "ZRyxH-db4iY";
       let player;
       let musicOn = true;
@@ -377,6 +410,25 @@
         const y = Math.max(0, Math.random() * maxY);
         noBtn.style.left = `${x}px`;
         noBtn.style.top = `${y}px`;
+        noBtn.classList.remove("teasing");
+        void noBtn.offsetWidth;
+        noBtn.classList.add("teasing");
+        showTease();
+      }
+
+      function showTease() {
+        const rect = noBtn.getBoundingClientRect();
+        const bubble = document.createElement("div");
+        bubble.className = "tease-pop";
+        bubble.textContent = teaseLines[Math.floor(Math.random() * teaseLines.length)];
+
+        const left = Math.min(window.innerWidth - 90, Math.max(10, rect.left - 8));
+        const top = Math.max(10, rect.top - 26);
+        bubble.style.left = `${left}px`;
+        bubble.style.top = `${top}px`;
+
+        document.body.appendChild(bubble);
+        setTimeout(() => bubble.remove(), 950);
       }
 
       noBtn.addEventListener("mouseenter", moveNo);
