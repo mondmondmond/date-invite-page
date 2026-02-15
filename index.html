@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>나랑 수요일에 키카가지 않을래?</title>
+  <meta name="description" content="나랑 수요일에 키카가지 않을래?" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="나랑 수요일에 키카가지 않을래?" />
+  <meta property="og:description" content="데이트 많이 못 해봤습니다요" />
+  <meta property="og:image" content="/preview.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:locale" content="ko_KR" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="나랑 수요일에 키카가지 않을래?" />
+  <meta name="twitter:description" content="데이트 많이 못 해봤습니다요" />
+  <meta name="twitter:image" content="/preview.jpg" />
+  <style>
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    button { appearance: none; font: inherit; -webkit-appearance: none; }
+
+    :root {
+      --bg-image: url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQyQCJ6iJtvDENTuBbPOVvQbiCJ0mAJ0BrUyQ&s");
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+      overflow: hidden;
+      background-image: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.35)),
+        var(--bg-image);
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      transition: background-image 0.5s ease;
+      font-family: "Gowun Dodum", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: clamp(20px, 6vw, 32px);
+      text-align: center;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+      position: relative;
+      z-index: 10;
+    }
+
+    h1 {
+      font-size: clamp(18px, 5vw, 22px);
+      line-height: 1.6;
+      margin: 0 0 24px;
+    }
+
+    .btn-container {
+      position: relative;
+      width: min(280px, 100%);
+      height: 60px;
+      margin: 0 auto;
+      touch-action: manipulation;
+    }
+
+    .btn {
+      position: absolute;
+      top: 6px;
+      width: min(120px, calc(50% - 10px));
+      height: 48px;
+      border: none;
+      border-radius: 30px;
+      font-size: 16px;
+      cursor: pointer;
+      user-select: none;
+      z-index: 20;
+      pointer-events: auto;
+      transition: transform 0.15s ease;
+    }
+
+    .btn:active { transform: scale(0.98); }
+
+    .yes {
+      left: 0;
+      background: #ff4d6d;
+      color: #fff;
+    }
+
+    .no {
+      left: calc(100% - min(120px, calc(50% - 10px)));
+      background: #d6d6d6;
+      color: #111;
+    }
+
+    .result {
+      margin-top: 18px;
+      font-size: 20px;
+      font-weight: 700;
+      color: #ff4d6d;
+      display: none;
+    }
+
+    .heart {
+      position: fixed;
+      pointer-events: none;
+      animation: float 2.8s linear forwards;
+      z-index: 5;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(-300px); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>
+      나랑 수요일에 키카가지 않을래?
+    </h1>
+
+    <div class="btn-container" id="btnArea">
+      <button class="btn yes" id="yesBtn" type="button">Yes</button>
+      <button class="btn no" id="noBtn" type="button">No</button>
+    </div>
+
+    <div class="result" id="result">❤️ 우리 수요일 키카 확정 ❤️</div>
+  </div>
+
+  <script>
+    (function () {
+      const yesBtn = document.getElementById("yesBtn");
+      const noBtn = document.getElementById("noBtn");
+      const btnArea = document.getElementById("btnArea");
+      const result = document.getElementById("result");
+
+      if (!yesBtn || !noBtn || !btnArea) {
+        return;
+      }
+
+      yesBtn.addEventListener("click", () => {
+        document.body.style.backgroundImage =
+          'linear-gradient(rgba(0, 0, 0, 0.22), rgba(0, 0, 0, 0.22)), var(--bg-image)';
+        result.style.display = "block";
+        createHearts();
+      });
+
+      function createHearts() {
+        for (let i = 0; i < 20; i++) {
+          const heart = document.createElement("div");
+          heart.className = "heart";
+          heart.textContent = "❤️";
+          heart.style.left = `${Math.random() * window.innerWidth}px`;
+          heart.style.top = `${window.innerHeight}px`;
+          document.body.appendChild(heart);
+          setTimeout(() => heart.remove(), 2800);
+        }
+      }
+
+      function moveNo() {
+        const w = noBtn.offsetWidth || 120;
+        const h = noBtn.offsetHeight || 48;
+        const maxX = btnArea.clientWidth - w;
+        const maxY = btnArea.clientHeight - h;
+        const x = Math.max(0, Math.random() * maxX);
+        const y = Math.max(0, Math.random() * maxY);
+        noBtn.style.left = `${x}px`;
+        noBtn.style.top = `${y}px`;
+      }
+
+      noBtn.addEventListener("mouseenter", moveNo);
+      noBtn.addEventListener("touchstart", (e) => {
+        e.preventDefault();
+        moveNo();
+      }, { passive: false });
+      noBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        moveNo();
+      });
+    })();
+  </script>
+</body>
+</html>
