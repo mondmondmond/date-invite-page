@@ -120,13 +120,78 @@
       z-index: 5;
     }
 
+    .emoji-burst {
+      position: fixed;
+      pointer-events: none;
+      z-index: 6;
+      will-change: transform, opacity;
+      animation: burst 3.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    }
+
+    .spark {
+      position: fixed;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 6;
+      animation: spark 1.6s ease-out forwards;
+    }
+
+    .music-toggle {
+      position: fixed;
+      top: 14px;
+      right: 14px;
+      z-index: 30;
+      border: none;
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      background: rgba(17, 17, 17, 0.5);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      cursor: pointer;
+    }
+
+    .music-toggle:active {
+      transform: scale(0.98);
+    }
+
+    .yt-audio {
+      position: fixed;
+      width: 1px;
+      height: 1px;
+      left: -9999px;
+      top: -9999px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
     @keyframes float {
       0% { transform: translateY(0); opacity: 1; }
       100% { transform: translateY(-300px); opacity: 0; }
     }
+
+    @keyframes burst {
+      0% { transform: translate(0, 0) scale(0.6) rotate(0deg); opacity: 0; }
+      15% { opacity: 1; }
+      100% {
+        transform: translate(var(--tx, 0px), var(--ty, -260px)) scale(1.3) rotate(var(--rot, 0deg));
+        opacity: 0;
+      }
+    }
+
+    @keyframes spark {
+      0% { transform: scale(0.6); opacity: 0.9; }
+      100% { transform: translateY(-50px) scale(0.1); opacity: 0; }
+    }
   </style>
 </head>
 <body>
+  <button id="musicToggle" class="music-toggle" type="button">배경음악 끄기</button>
+
   <div class="card">
     <h1>
       나랑 수요일에 키카가지 않을래?
@@ -140,33 +205,139 @@
     <div class="result" id="result">❤️ 우리 수요일 키카 확정 ❤️</div>
   </div>
 
+  <div id="ytPlayer" class="yt-audio" aria-hidden="true"></div>
+  <script src="https://www.youtube.com/iframe_api"></script>
+
   <script>
     (function () {
       const yesBtn = document.getElementById("yesBtn");
       const noBtn = document.getElementById("noBtn");
       const btnArea = document.getElementById("btnArea");
       const result = document.getElementById("result");
+      const musicToggle = document.getElementById("musicToggle");
+      const emojis = ["❤️", "💖", "💘", "💞", "💕", "✨", "🎉", "🥳", "😽", "💫"];
+      const sparkColors = ["#ff4d6d", "#ffd166", "#7bdff2", "#f9a8d4", "#ffffff"];
+      const musicVideoId = "ZRyxH-db4iY";
+      let player;
+      let musicOn = true;
 
       if (!yesBtn || !noBtn || !btnArea) {
         return;
       }
 
+      function setMusicLabel() {
+        if (!musicToggle) return;
+        musicToggle.textContent = musicOn ? "배경음악 끄기" : "배경음악 켜기";
+      }
+
+      function tryPlayMusic() {
+        if (!player || typeof player.playVideo !== "function") return;
+        try {
+          player.playVideo();
+          if (typeof player.setVolume === "function") {
+            player.setVolume(40);
+          }
+          musicOn = true;
+          setMusicLabel();
+        } catch (_err) {
+          // ignore autoplay restriction errors
+        }
+      }
+
+      function pauseMusic() {
+        if (!player || typeof player.pauseVideo !== "function") return;
+        try {
+          player.pauseVideo();
+          musicOn = false;
+          setMusicLabel();
+        } catch (_err) {
+          // ignore
+        }
+      }
+
+      window.onYouTubeIframeAPIReady = function () {
+        player = new window.YT.Player("ytPlayer", {
+          videoId: musicVideoId,
+          playerVars: {
+            autoplay: 1,
+            controls: 0,
+            disablekb: 1,
+            fs: 0,
+            iv_load_policy: 3,
+            loop: 1,
+            modestbranding: 1,
+            playlist: musicVideoId,
+            playsinline: 1,
+            rel: 0
+          },
+          events: {
+            onReady: function () {
+              tryPlayMusic();
+            }
+          }
+        });
+      };
+
+      const wakeMusic = () => {
+        tryPlayMusic();
+      };
+
+      ["click", "touchstart", "keydown"].forEach((eventName) => {
+        document.addEventListener(eventName, wakeMusic, { once: true, passive: true });
+      });
+
+      if (musicToggle) {
+        musicToggle.addEventListener("click", () => {
+          if (musicOn) {
+            pauseMusic();
+          } else {
+            tryPlayMusic();
+          }
+        });
+      }
+
+      setMusicLabel();
+
       yesBtn.addEventListener("click", () => {
         document.body.style.backgroundImage =
           'linear-gradient(rgba(0, 0, 0, 0.22), rgba(0, 0, 0, 0.22)), var(--bg-image)';
         result.style.display = "block";
-        createHearts();
+        createCelebration();
       });
 
-      function createHearts() {
-        for (let i = 0; i < 20; i++) {
-          const heart = document.createElement("div");
-          heart.className = "heart";
-          heart.textContent = "❤️";
-          heart.style.left = `${Math.random() * window.innerWidth}px`;
-          heart.style.top = `${window.innerHeight}px`;
-          document.body.appendChild(heart);
-          setTimeout(() => heart.remove(), 2800);
+      function createCelebration() {
+        for (let i = 0; i < 34; i++) {
+          const item = document.createElement("div");
+          item.className = "emoji-burst";
+          item.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+
+          const startX = window.innerWidth * 0.5 + (Math.random() * 110 - 55);
+          const startY = window.innerHeight * 0.68 + (Math.random() * 36 - 18);
+          const tx = (Math.random() * 2 - 1) * 260;
+          const ty = -(120 + Math.random() * 280);
+          const rot = `${Math.random() * 120 - 60}deg`;
+
+          item.style.left = `${startX}px`;
+          item.style.top = `${startY}px`;
+          item.style.fontSize = `${16 + Math.random() * 22}px`;
+          item.style.setProperty("--tx", `${tx}px`);
+          item.style.setProperty("--ty", `${ty}px`);
+          item.style.setProperty("--rot", rot);
+          item.style.animationDelay = `${Math.random() * 0.25}s`;
+
+          document.body.appendChild(item);
+          setTimeout(() => item.remove(), 3400);
+        }
+
+        for (let i = 0; i < 24; i++) {
+          const spark = document.createElement("div");
+          spark.className = "spark";
+          spark.style.left = `${window.innerWidth * 0.5 + (Math.random() * 280 - 140)}px`;
+          spark.style.top = `${window.innerHeight * 0.7 + (Math.random() * 60 - 30)}px`;
+          spark.style.background = sparkColors[Math.floor(Math.random() * sparkColors.length)];
+          spark.style.animationDelay = `${Math.random() * 0.3}s`;
+          document.body.appendChild(spark);
+          setTimeout(() => spark.remove(), 1800);
         }
       }
 
